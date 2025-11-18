@@ -3,10 +3,11 @@ package domain
 import "time"
 
 type User struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
-	Email string `json:"email"`
-	RoleID string `json:"role_id"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	RoleID    string    `json:"role_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
