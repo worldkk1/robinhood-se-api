@@ -8,7 +8,8 @@ CREATE TABLE tasks (
   user_id UUID NOT NULL,
   archive_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 -- +goose StatementEnd
 

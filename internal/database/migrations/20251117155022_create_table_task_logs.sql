@@ -7,7 +7,8 @@ CREATE TABLE task_logs (
   description TEXT,
   status task_status,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE
 );
 -- +goose StatementEnd
 
