@@ -64,8 +64,24 @@ func (r *taskPostgresRepository) Find(where string, params ...any) ([]domain.Tas
 
 func (r *taskPostgresRepository) FindOneByID(id string) (*domain.Task, error) {
 	var taskModel models.TaskModel
-	if err := r.db.GetDb().Where("id = ?", id).First(&taskModel).Error; err != nil {
+	if err := r.db.GetDb().Model(&models.TaskModel{}).Preload("User").Preload("TaskLogs").Where("id = ?", id).First(&taskModel).Error; err != nil {
 		return nil, err
+	}
+	var taskLogs []domain.TaskLog
+	for _, log := range taskModel.TaskLogs {
+		var status domain.TaskStatus
+		if log.Status != nil {
+			status = domain.TaskStatus(*log.Status)
+		}
+		taskLogs = append(taskLogs, domain.TaskLog{
+			ID:          log.ID,
+			TaskID:      log.TaskID,
+			Title:       log.Title,
+			Description: log.Description,
+			Status:      &status,
+			CreatedAt:   log.CreatedAt,
+			UpdatedAt:   log.UpdatedAt,
+		})
 	}
 	result := domain.Task{
 		ID:          taskModel.ID,
@@ -76,6 +92,8 @@ func (r *taskPostgresRepository) FindOneByID(id string) (*domain.Task, error) {
 		ArchivedAt:  taskModel.ArchivedAt,
 		CreatedAt:   taskModel.CreatedAt,
 		UpdatedAt:   taskModel.UpdatedAt,
+		User:        domain.User(taskModel.User),
+		TaskLog:     taskLogs,
 	}
 
 	return &result, nil

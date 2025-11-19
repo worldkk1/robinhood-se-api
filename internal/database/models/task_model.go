@@ -46,6 +46,8 @@ type TaskModel struct {
 	ArchivedAt  *time.Time     `gorm:"column:archived_at"`
 	CreatedAt   time.Time      `gorm:"column:created_at"`
 	UpdatedAt   time.Time      `gorm:"column:updated_at"`
+	User        UserModel      `gorm:"foreignKey:UserID;references:ID"`
+	TaskLogs    []TaskLogModel `gorm:"foreignKey:TaskID;references:ID"`
 }
 
 func (TaskModel) TableName() string {

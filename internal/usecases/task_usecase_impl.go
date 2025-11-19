@@ -26,22 +26,53 @@ func (u *taskUsecaseImpl) CreateTask(input domain.Task) error {
 	return nil
 }
 
-func (u *taskUsecaseImpl) GetTaskList() []domain.Task {
+func (u *taskUsecaseImpl) GetTaskList() []TaskList {
 	tasks, err := u.taskRepository.Find("archived_at IS NULL")
 	if err != nil {
-		return []domain.Task{}
+		return []TaskList{}
 	}
 
-	return tasks
+	var taskList []TaskList
+	for _, task := range tasks {
+		taskList = append(taskList, TaskList{
+			ID:          task.ID,
+			Title:       task.Title,
+			Description: task.Description,
+			UserID:      task.UserID,
+			Status:      task.Status,
+			ArchivedAt:  task.ArchivedAt,
+			CreatedAt:   task.CreatedAt,
+			UpdatedAt:   task.UpdatedAt,
+		})
+	}
+
+	return taskList
 }
 
-func (u *taskUsecaseImpl) GetTaskDetail(id string) *domain.Task {
+func (u *taskUsecaseImpl) GetTaskDetail(id string) *TaskDetail {
 	task, err := u.taskRepository.FindOneByID(id)
 	if err != nil {
 		return nil
 	}
 
-	return task
+	taskDetail := TaskDetail{
+		ID:          task.ID,
+		Title:       task.Title,
+		Description: task.Description,
+		Status:      task.Status,
+		UserID:      task.UserID,
+		ArchivedAt:  task.ArchivedAt,
+		CreatedAt:   task.CreatedAt,
+		UpdatedAt:   task.UpdatedAt,
+		TaskLogs:    task.TaskLog,
+		User: TaskUserDetail{
+			ID:    task.User.ID,
+			Name:  task.User.Name,
+			Email: task.User.Email,
+		},
+	}
+
+	return &taskDetail
 }
 
 func (u *taskUsecaseImpl) EditTask(id string, input domain.Task) error {

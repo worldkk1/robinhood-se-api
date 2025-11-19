@@ -7,8 +7,10 @@ type Task struct {
 	Title       string     `json:"title"`
 	Description string     `json:"description"`
 	Status      TaskStatus `json:"status"`
-	UserID      string     `json:"user_id"`
-	ArchivedAt  *time.Time `json:"archived_at"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	UserID      string     `json:"userId"`
+	ArchivedAt  *time.Time `json:"archivedAt"`
+	CreatedAt   time.Time  `json:"createdAt"`
+	UpdatedAt   time.Time  `json:"updatedAt"`
+	User        User       `json:"user"`
+	TaskLog     []TaskLog  `json:"taskLogs"`
 }
