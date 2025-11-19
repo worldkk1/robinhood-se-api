@@ -75,8 +75,8 @@ func (u *taskUsecaseImpl) GetTaskDetail(id string) *TaskDetail {
 	return &taskDetail
 }
 
-func (u *taskUsecaseImpl) EditTask(id string, input domain.Task) error {
-	err := u.taskRepository.Update(id, input)
+func (u *taskUsecaseImpl) EditTask(id string, input domain.Task, updatedBy string) error {
+	err := u.taskRepository.Update(id, input, updatedBy)
 	if err != nil {
 		return err
 	}
@@ -84,11 +84,11 @@ func (u *taskUsecaseImpl) EditTask(id string, input domain.Task) error {
 	return nil
 }
 
-func (u *taskUsecaseImpl) ArchiveTask(id string) error {
+func (u *taskUsecaseImpl) ArchiveTask(id string, updatedBy string) error {
 	now := time.Now()
 	err := u.taskRepository.Update(id, domain.Task{
 		ArchivedAt: &now,
-	})
+	}, updatedBy)
 	if err != nil {
 		return err
 	}

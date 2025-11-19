@@ -8,6 +8,7 @@ type TaskLogModel struct {
 	Title       *string         `gorm:"column:title"`
 	Description *string         `gorm:"column:description"`
 	Status      *TaskStatusEnum `gorm:"column:status;type:task_status"`
+	UserID      string          `gorm:"user_id"`
 	CreatedAt   time.Time       `gorm:"column:created_at"`
 	UpdatedAt   time.Time       `gorm:"column:updated_at"`
 }

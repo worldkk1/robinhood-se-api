@@ -30,6 +30,7 @@ func (r *taskPostgresRepository) Create(input domain.Task) error {
 			Title:       &taskModel.Title,
 			Description: &taskModel.Description,
 			Status:      &taskModel.Status,
+			UserID:      taskModel.UserID,
 		}
 		if err := tx.Create(&taskLog).Error; err != nil {
 			return err
@@ -79,6 +80,7 @@ func (r *taskPostgresRepository) FindOneByID(id string) (*domain.Task, error) {
 			Title:       log.Title,
 			Description: log.Description,
 			Status:      &status,
+			UserID:      log.UserID,
 			CreatedAt:   log.CreatedAt,
 			UpdatedAt:   log.UpdatedAt,
 		})
@@ -99,7 +101,7 @@ func (r *taskPostgresRepository) FindOneByID(id string) (*domain.Task, error) {
 	return &result, nil
 }
 
-func (r *taskPostgresRepository) Update(id string, input domain.Task) error {
+func (r *taskPostgresRepository) Update(id string, input domain.Task, updatedBy string) error {
 	return r.db.GetDb().Transaction(func(tx *gorm.DB) error {
 		var taskModel models.TaskModel
 		if err := tx.Where("id = ?", id).First(&taskModel).Error; err != nil {
@@ -108,6 +110,7 @@ func (r *taskPostgresRepository) Update(id string, input domain.Task) error {
 
 		taskLog := models.TaskLogModel{
 			TaskID: taskModel.ID,
+			UserID: updatedBy,
 		}
 		if input.Title != "" {
 			taskModel.Title = input.Title

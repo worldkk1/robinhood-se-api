@@ -40,6 +40,6 @@ type TaskUsecase interface {
 	CreateTask(input domain.Task) error
 	GetTaskList() []TaskList
 	GetTaskDetail(id string) *TaskDetail
-	EditTask(id string, input domain.Task) error
-	ArchiveTask(id string) error
+	EditTask(id string, input domain.Task, updatedBy string) error
+	ArchiveTask(id string, updatedBy string) error
 }

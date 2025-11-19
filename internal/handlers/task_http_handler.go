@@ -77,6 +77,11 @@ func (h *taskHttpHandler) GetTaskDetail(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *taskHttpHandler) EditTask(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(middleware.ContextUserKey).(middleware.AuthUser)
+	if !ok {
+		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
+	}
 	taskId := r.PathValue("id")
 	var payload dto.EditTaskRequest
 	err := json.NewDecoder(r.Body).Decode(&payload)
@@ -89,7 +94,7 @@ func (h *taskHttpHandler) EditTask(w http.ResponseWriter, r *http.Request) {
 		Description: payload.Description,
 		Status:      domain.TaskStatus(payload.Status),
 	}
-	err = h.taskUsecase.EditTask(taskId, input)
+	err = h.taskUsecase.EditTask(taskId, input, user.UserId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -99,8 +104,13 @@ func (h *taskHttpHandler) EditTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *taskHttpHandler) ArchiveTask(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(middleware.ContextUserKey).(middleware.AuthUser)
+	if !ok {
+		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
+	}
 	taskId := r.PathValue("id")
-	err := h.taskUsecase.ArchiveTask(taskId)
+	err := h.taskUsecase.ArchiveTask(taskId, user.UserId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
