@@ -11,6 +11,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type signTokenPayload struct {
+	UserID string
+	Role   string
+}
+
 type authUsecaseImpl struct {
 	userRepository repositories.UserRepository
 }
@@ -41,11 +46,15 @@ func (u *authUsecaseImpl) Login(email string, password string) (*AuthToken, erro
 	if !checkPassword(foundUser.Password, password) {
 		return nil, errors.New(loginError)
 	}
-	accessToken, err := signToken(foundUser.ID, time.Now().Add(time.Hour*24))
+	payload := signTokenPayload{
+		UserID: foundUser.ID,
+		Role:   foundUser.RoleID,
+	}
+	accessToken, err := signToken(payload, time.Now().Add(time.Hour*24))
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := signToken(foundUser.ID, time.Now().AddDate(0, 0, 30))
+	refreshToken, err := signToken(payload, time.Now().AddDate(0, 0, 30))
 	if err != nil {
 		return nil, err
 	}
@@ -56,10 +65,11 @@ func (u *authUsecaseImpl) Login(email string, password string) (*AuthToken, erro
 	}, nil
 }
 
-func signToken(id string, expiredAt time.Time) (string, error) {
+func signToken(payload signTokenPayload, expiredAt time.Time) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": id,
-		"exp": expiredAt.Unix(),
+		"sub":  payload.UserID,
+		"role": payload.Role,
+		"exp":  expiredAt.Unix(),
 	})
 	secretKey := viper.GetString("SECRET_KEY")
 	signToken, err := token.SignedString([]byte(secretKey))

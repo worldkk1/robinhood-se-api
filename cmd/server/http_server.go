@@ -46,7 +46,7 @@ func (s *httpServer) Start() {
 	v1.HandleFunc("POST /auth/login", authHTTP.Login)
 
 	securedRouter := http.NewServeMux()
-	securedRouter.HandleFunc("POST /tasks", taskHTTP.CreateTask)
+	securedRouter.HandleFunc("POST /tasks", middleware.CheckRoleAdminMiddleware(http.HandlerFunc(taskHTTP.CreateTask)))
 	securedRouter.HandleFunc("GET /tasks", taskHTTP.GetTaskList)
 	securedRouter.HandleFunc("GET /tasks/{id}", taskHTTP.GetTaskDetail)
 	securedRouter.HandleFunc("PATCH /tasks/{id}", taskHTTP.EditTask)

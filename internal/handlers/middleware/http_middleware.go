@@ -15,6 +15,7 @@ type Middleware func(http.Handler) http.HandlerFunc
 
 type AuthUser struct {
 	UserId string
+	Role   string
 }
 
 type contextKey string
@@ -74,12 +75,35 @@ func AuthMiddleware(next http.Handler) http.HandlerFunc {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+		role, ok := claims["role"].(string)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 
 		authUser := AuthUser{
 			UserId: sub,
+			Role:   role,
 		}
 		ctx := context.WithValue(r.Context(), ContextUserKey, authUser)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
+	}
+}
+
+func CheckRoleAdminMiddleware(next http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value(ContextUserKey).(AuthUser)
+		if !ok {
+			http.Error(w, "User not found", http.StatusInternalServerError)
+			return
+		}
+		// Check if role_id is admin role
+		if user.Role != "ae4c58a6-101a-4b0b-a63e-e187d1920c7e" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	}
 }
