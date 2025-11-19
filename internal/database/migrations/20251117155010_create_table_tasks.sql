@@ -6,7 +6,7 @@ CREATE TABLE tasks (
   description TEXT,
   status task_status DEFAULT 'to_do',
   user_id UUID NOT NULL,
-  archive_at TIMESTAMPTZ,
+  archived_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
