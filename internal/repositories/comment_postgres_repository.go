@@ -60,3 +60,21 @@ func (r *commentPostgresRepository) Update(id string, input domain.Comment) erro
 func (r *commentPostgresRepository) Delete(id string) error {
 	return r.db.GetDb().Delete(&models.CommentModel{ID: id}).Error
 }
+
+func (r *commentPostgresRepository) FindOneByID(id string) (*domain.Comment, error) {
+	var commentModel models.CommentModel
+	if err := r.db.GetDb().Where("id = ?", id).First(&commentModel).Error; err != nil {
+		return nil, err
+	}
+
+	result := domain.Comment{
+		ID:        commentModel.ID,
+		Content:   commentModel.Content,
+		UserID:    commentModel.UserID,
+		TaskID:    commentModel.TaskID,
+		CreatedAt: commentModel.CreatedAt,
+		UpdatedAt: commentModel.UpdatedAt,
+	}
+
+	return &result, nil
+}

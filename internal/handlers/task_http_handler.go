@@ -163,6 +163,11 @@ func (h *taskHttpHandler) GetTaskComments(w http.ResponseWriter, r *http.Request
 }
 
 func (h *taskHttpHandler) EditTaskComment(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(middleware.ContextUserKey).(middleware.AuthUser)
+	if !ok {
+		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
+	}
 	commentId := r.PathValue("commentId")
 	var payload dto.CreateTaskCommentRequest
 	err := json.NewDecoder(r.Body).Decode(&payload)
@@ -170,8 +175,12 @@ func (h *taskHttpHandler) EditTaskComment(w http.ResponseWriter, r *http.Request
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = h.commentUsecase.EditComment(commentId, payload.Content)
+	err = h.commentUsecase.EditComment(commentId, payload.Content, user.UserId)
 	if err != nil {
+		if err.Error() == "user_not_allow" {
+			http.Error(w, err.Error(), http.StatusForbidden)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -180,9 +189,18 @@ func (h *taskHttpHandler) EditTaskComment(w http.ResponseWriter, r *http.Request
 }
 
 func (h *taskHttpHandler) DeleteTaskComment(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(middleware.ContextUserKey).(middleware.AuthUser)
+	if !ok {
+		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
+	}
 	commentId := r.PathValue("commentId")
-	err := h.commentUsecase.DeleteComment(commentId)
+	err := h.commentUsecase.DeleteComment(commentId, user.UserId)
 	if err != nil {
+		if err.Error() == "user_not_allow" {
+			http.Error(w, err.Error(), http.StatusForbidden)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

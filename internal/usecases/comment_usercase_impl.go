@@ -1,6 +1,8 @@
 package usecases
 
 import (
+	"errors"
+
 	"github.com/worldkk1/robinhood-se-api/domain"
 	"github.com/worldkk1/robinhood-se-api/internal/repositories"
 )
@@ -30,12 +32,27 @@ func (u *commentUsecaseImpl) GetTaskComments(taskId string) []domain.Comment {
 	return comments
 }
 
-func (u *commentUsecaseImpl) EditComment(id string, content string) error {
+func (u *commentUsecaseImpl) EditComment(id string, content string, userId string) error {
+	comment, err := u.commentRepository.FindOneByID(id)
+	if err != nil {
+		return err
+	}
+	if comment.UserID != userId {
+		return errors.New("user_not_allow")
+	}
+
 	return u.commentRepository.Update(id, domain.Comment{
 		Content: content,
 	})
 }
 
-func (u *commentUsecaseImpl) DeleteComment(id string) error {
+func (u *commentUsecaseImpl) DeleteComment(id string, userId string) error {
+	comment, err := u.commentRepository.FindOneByID(id)
+	if err != nil {
+		return err
+	}
+	if comment.UserID != userId {
+		return errors.New("user_not_allow")
+	}
 	return u.commentRepository.Delete(id)
 }
