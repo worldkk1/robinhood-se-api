@@ -11,12 +11,14 @@ import (
 )
 
 type taskHttpHandler struct {
-	taskUsecase usecases.TaskUsecase
+	taskUsecase    usecases.TaskUsecase
+	commentUsecase usecases.CommentUsecase
 }
 
-func NewTaskHttpHandler(taskUsecase usecases.TaskUsecase) *taskHttpHandler {
+func NewTaskHttpHandler(taskUsecase usecases.TaskUsecase, commentUsecase usecases.CommentUsecase) *taskHttpHandler {
 	return &taskHttpHandler{
-		taskUsecase: taskUsecase,
+		taskUsecase:    taskUsecase,
+		commentUsecase: commentUsecase,
 	}
 }
 
@@ -93,7 +95,7 @@ func (h *taskHttpHandler) EditTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *taskHttpHandler) ArchiveTask(w http.ResponseWriter, r *http.Request) {
@@ -104,5 +106,76 @@ func (h *taskHttpHandler) ArchiveTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *taskHttpHandler) CreateTaskComment(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(middleware.ContextUserKey).(middleware.AuthUser)
+	if !ok {
+		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
+	}
+	taskId := r.PathValue("id")
+	var payload dto.CreateTaskCommentRequest
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	input := domain.Comment{
+		Content: payload.Content,
+		UserID:  user.UserId,
+		TaskID:  taskId,
+	}
+	err = h.commentUsecase.CreateComment(input)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (h *taskHttpHandler) GetTaskComments(w http.ResponseWriter, r *http.Request) {
+	taskId := r.PathValue("id")
+	comments := h.commentUsecase.GetTaskComments(taskId)
+	if comments == nil {
+		comments = []domain.Comment{}
+	}
+	result, err := json.Marshal(comments)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(result)
+}
+
+func (h *taskHttpHandler) EditTaskComment(w http.ResponseWriter, r *http.Request) {
+	commentId := r.PathValue("commentId")
+	var payload dto.CreateTaskCommentRequest
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = h.commentUsecase.EditComment(commentId, payload.Content)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *taskHttpHandler) DeleteTaskComment(w http.ResponseWriter, r *http.Request) {
+	commentId := r.PathValue("commentId")
+	err := h.commentUsecase.DeleteComment(commentId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

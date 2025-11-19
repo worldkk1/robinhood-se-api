@@ -10,3 +10,7 @@ type EditTaskRequest struct {
 	Description string `json:"description"`
 	Status      string `json:"status"`
 }
+
+type CreateTaskCommentRequest struct {
+	Content string `json:"content"`
+}

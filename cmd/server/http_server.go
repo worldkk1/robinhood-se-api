@@ -31,10 +31,12 @@ func NewHttpServer(conf *config.Config, db database.Database) Server {
 func (s *httpServer) Start() {
 	userRepo := repository.NewUserPostgresRepository(s.db)
 	taskRepo := repository.NewTaskPostgresRepository(s.db)
+	commentRepo := repository.NewCommentPostgresRepository(s.db)
 	authUC := usecase.NewAuthUsecaseImpl(userRepo)
 	taskUC := usecase.NewTaskUsecaseImpl(taskRepo)
+	commentUC := usecase.NewCommentUsecaseImpl(commentRepo)
 	authHTTP := handler.NewAuthHttpHandler(authUC)
-	taskHTTP := handler.NewTaskHttpHandler(taskUC)
+	taskHTTP := handler.NewTaskHttpHandler(taskUC, commentUC)
 
 	v1 := http.NewServeMux()
 	v1.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +51,10 @@ func (s *httpServer) Start() {
 	securedRouter.HandleFunc("GET /tasks/{id}", taskHTTP.GetTaskDetail)
 	securedRouter.HandleFunc("PATCH /tasks/{id}", taskHTTP.EditTask)
 	securedRouter.HandleFunc("PATCH /tasks/{id}/archive", taskHTTP.ArchiveTask)
+	securedRouter.HandleFunc("POST /tasks/{id}/comments", taskHTTP.CreateTaskComment)
+	securedRouter.HandleFunc("GET /tasks/{id}/comments", taskHTTP.GetTaskComments)
+	securedRouter.HandleFunc("PATCH /tasks/{id}/comments/{commentId}", taskHTTP.EditTaskComment)
+	securedRouter.HandleFunc("DELETE /tasks/{id}/comments/{commentId}", taskHTTP.DeleteTaskComment)
 	v1.Handle("/", middleware.AuthMiddleware(securedRouter))
 
 	s.app.Handle("/v1/", http.StripPrefix("/v1", v1))
