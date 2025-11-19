@@ -30,8 +30,12 @@ func NewHttpServer(conf *config.Config, db database.Database) Server {
 
 func (s *httpServer) Start() {
 	userRepo := repository.NewUserPostgresRepository(s.db)
+	taskRepo := repository.NewTaskPostgresRepository(s.db)
 	authUC := usecase.NewAuthUsecaseImpl(userRepo)
+	taskUC := usecase.NewTaskUsecaseImpl(taskRepo)
 	authHTTP := handler.NewAuthHttpHandler(authUC)
+	taskHTTP := handler.NewTaskHttpHandler(taskUC)
+
 	v1 := http.NewServeMux()
 	v1.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -40,6 +44,11 @@ func (s *httpServer) Start() {
 	v1.HandleFunc("POST /auth/login", authHTTP.Login)
 
 	securedRouter := http.NewServeMux()
+	securedRouter.HandleFunc("POST /tasks", taskHTTP.CreateTask)
+	securedRouter.HandleFunc("GET /tasks", taskHTTP.GetTaskList)
+	securedRouter.HandleFunc("GET /tasks/{id}", taskHTTP.GetTaskDetail)
+	securedRouter.HandleFunc("PATCH /tasks/{id}", taskHTTP.EditTask)
+	securedRouter.HandleFunc("PATCH /tasks/{id}/archive", taskHTTP.ArchiveTask)
 	v1.Handle("/", middleware.AuthMiddleware(securedRouter))
 
 	s.app.Handle("/v1/", http.StripPrefix("/v1", v1))
