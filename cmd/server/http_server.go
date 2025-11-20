@@ -58,7 +58,10 @@ func (s *httpServer) Start() {
 	v1.Handle("/", middleware.AuthMiddleware(securedRouter))
 
 	s.app.Handle("/v1/", http.StripPrefix("/v1", v1))
-	middlewareChain := middleware.MiddlewareChain(middleware.LoggerMiddleware)
+	middlewareChain := middleware.MiddlewareChain(
+		middleware.RateLimitMiddleware,
+		middleware.LoggerMiddleware,
+	)
 
 	port := fmt.Sprintf(":%d", s.conf.Port)
 	log.Println("Server running at ", port)

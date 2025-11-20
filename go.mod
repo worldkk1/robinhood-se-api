@@ -3,7 +3,9 @@ module github.com/worldkk1/robinhood-se-api
 go 1.25.2
 
 require (
+	github.com/go-redis/redis_rate/v10 v10.0.1
 	github.com/golang-jwt/jwt/v5 v5.3.0
+	github.com/redis/go-redis/v9 v9.0.2
 	github.com/spf13/viper v1.21.0
 	golang.org/x/crypto v0.31.0
 	gorm.io/driver/postgres v1.6.0
@@ -11,6 +13,8 @@ require (
 )
 
 require (
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

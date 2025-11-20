@@ -7,7 +7,9 @@ import (
 	"strings"
 	"time"
 
+	redisrate "github.com/go-redis/redis_rate/v10"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 )
 
@@ -18,9 +20,14 @@ type AuthUser struct {
 	Role   string
 }
 
+type RedisRateLimiter struct {
+	*redisrate.Limiter
+}
+
 type contextKey string
 
 const ContextUserKey contextKey = "user"
+const rateLimitRequestKey = "rate_limit_request"
 
 func MiddlewareChain(middleware ...Middleware) Middleware {
 	return func(next http.Handler) http.HandlerFunc {
@@ -101,6 +108,35 @@ func CheckRoleAdminMiddleware(next http.Handler) http.HandlerFunc {
 		// Check if role_id is admin role
 		if user.Role != "ae4c58a6-101a-4b0b-a63e-e187d1920c7e" {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	}
+}
+
+func SetupRedisRateLimiter() *redisrate.Limiter {
+	connString := viper.GetString("REDIS_CONNECTION_STRING")
+	client := redis.NewClient(&redis.Options{
+		Addr: connString,
+	})
+	_, err := client.Ping(context.Background()).Result()
+	if err != nil {
+		log.Fatal("Error connecting to Redis:", err)
+	}
+	return redisrate.NewLimiter(client)
+}
+
+func RateLimitMiddleware(next http.Handler) http.HandlerFunc {
+	redisRateLimiter := SetupRedisRateLimiter()
+	return func(w http.ResponseWriter, r *http.Request) {
+		res, _ := redisRateLimiter.Allow(r.Context(), rateLimitRequestKey, redisrate.Limit{
+			Rate:   1,
+			Burst:  10,
+			Period: time.Second,
+		})
+		if res.Allowed <= 0 {
+			http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
 			return
 		}
 
