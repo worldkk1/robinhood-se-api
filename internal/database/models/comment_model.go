@@ -9,6 +9,7 @@ type CommentModel struct {
 	TaskID    string    `gorm:"column:task_id"`
 	CreatedAt time.Time `gorm:"column:created_at"`
 	UpdatedAt time.Time `gorm:"column:updated_at"`
+	User      UserModel `gorm:"foreignKey:UserID;references:ID"`
 }
 
 func (CommentModel) TableName() string {

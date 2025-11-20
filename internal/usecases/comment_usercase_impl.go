@@ -23,13 +23,34 @@ func (u *commentUsecaseImpl) CreateComment(input domain.Comment) error {
 	return err
 }
 
-func (u *commentUsecaseImpl) GetTaskComments(taskId string) []domain.Comment {
-	comments, err := u.commentRepository.Find("task_id = ?", taskId)
+func (u *commentUsecaseImpl) GetTaskComments(taskId string) []TaskComment {
+	comments, err := u.commentRepository.Find(repositories.FindOption{
+		Where:       "task_id = ?",
+		WhereParams: []any{taskId},
+		Order:       "created_at desc",
+	})
 	if err != nil {
-		return []domain.Comment{}
+		return []TaskComment{}
 	}
 
-	return comments
+	var commentList []TaskComment
+	for _, comment := range comments {
+		commentList = append(commentList, TaskComment{
+			ID:        comment.ID,
+			Content:   comment.Content,
+			UserID:    comment.UserID,
+			TaskID:    comment.TaskID,
+			CreatedAt: comment.CreatedAt,
+			UpdatedAt: comment.UpdatedAt,
+			User: CommentUser{
+				ID:    comment.User.ID,
+				Name:  comment.User.Name,
+				Email: comment.User.Email,
+			},
+		})
+	}
+
+	return commentList
 }
 
 func (u *commentUsecaseImpl) EditComment(id string, content string, userId string) error {

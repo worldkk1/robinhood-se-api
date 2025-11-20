@@ -153,7 +153,7 @@ func (h *taskHttpHandler) GetTaskComments(w http.ResponseWriter, r *http.Request
 	taskId := r.PathValue("id")
 	comments := h.commentUsecase.GetTaskComments(taskId)
 	if comments == nil {
-		comments = []domain.Comment{}
+		comments = []usecases.TaskComment{}
 	}
 	result, err := json.Marshal(comments)
 	if err != nil {

@@ -27,9 +27,9 @@ func (r *commentPostgresRepository) Create(input domain.Comment) error {
 	return nil
 }
 
-func (r *commentPostgresRepository) Find(where string, params ...any) ([]domain.Comment, error) {
+func (r *commentPostgresRepository) Find(option FindOption) ([]domain.Comment, error) {
 	var commentModels []models.CommentModel
-	if err := r.db.GetDb().Where(where, params...).Find(&commentModels).Error; err != nil {
+	if err := r.db.GetDb().Model(&models.CommentModel{}).Preload("User").Where(option.Where, option.WhereParams...).Order(option.Order).Find(&commentModels).Error; err != nil {
 		return nil, err
 	}
 
@@ -42,6 +42,7 @@ func (r *commentPostgresRepository) Find(where string, params ...any) ([]domain.
 			TaskID:    m.TaskID,
 			CreatedAt: m.CreatedAt,
 			UpdatedAt: m.UpdatedAt,
+			User:      domain.User(m.User),
 		})
 	}
 

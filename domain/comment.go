@@ -9,4 +9,5 @@ type Comment struct {
 	TaskID    string    `json:"taskId"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+	User      User      `json:"user"`
 }
