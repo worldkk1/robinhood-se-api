@@ -12,6 +12,14 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  task-cache:
+    image: redis:alpine
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - cache:/data
+
   task-api:
     build: .
     environment:
@@ -22,10 +30,14 @@ services:
       DB_NAME: robinhood
       PORT: 3000
       SECRET_KEY: secret
+      REDIS_CONNECTION_STRING: task-cache:6379
     ports:
       - "3000:3000"
     depends_on:
       - task-db
+      - task-cache
 
 volumes:
   pgdata: {}
+  cache:
+    driver: local
