@@ -107,7 +107,7 @@ func CheckRoleAdminMiddleware(next http.Handler) http.HandlerFunc {
 		}
 		// Check if role_id is admin role
 		if user.Role != "ae4c58a6-101a-4b0b-a63e-e187d1920c7e" {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			http.Error(w, "no_permission", http.StatusForbidden)
 			return
 		}
 
