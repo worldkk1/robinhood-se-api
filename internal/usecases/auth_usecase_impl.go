@@ -50,7 +50,7 @@ func (u *authUsecaseImpl) Login(email string, password string) (*AuthToken, erro
 		UserID: foundUser.ID,
 		Role:   foundUser.RoleID,
 	}
-	accessToken, err := signToken(payload, time.Now().Add(time.Hour*24))
+	accessToken, err := signToken(payload, time.Now().Add(time.Minute*15))
 	if err != nil {
 		return nil, err
 	}
