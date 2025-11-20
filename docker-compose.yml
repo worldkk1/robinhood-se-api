@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: robinhood
+      POSTGRES_DB: task_db
     ports:
       - 5432:5432
     volumes:
@@ -27,7 +27,7 @@ services:
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: postgres
-      DB_NAME: robinhood
+      DB_NAME: task_db
       PORT: 3000
       SECRET_KEY: secret
       REDIS_CONNECTION_STRING: task-cache:6379
