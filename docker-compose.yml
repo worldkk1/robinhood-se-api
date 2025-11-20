@@ -11,6 +11,11 @@ services:
       - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   task-cache:
     image: redis:alpine
@@ -23,19 +28,24 @@ services:
   task-api:
     build: .
     environment:
-      DB_HOST: db
+      DB_HOST: task-db
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: postgres
       DB_NAME: task_db
+      DB_SSL_MODE: disable
       PORT: 3000
       SECRET_KEY: secret
       REDIS_CONNECTION_STRING: task-cache:6379
+      GOOSE_DRIVER: postgres
+      GOOSE_DBSTRING: "host=task-db port=5432 user=postgres password=postgres dbname=task_db sslmode=disable"
     ports:
       - "3000:3000"
     depends_on:
-      - task-db
-      - task-cache
+      task-db:
+        condition: service_healthy
+      task-cache:
+        condition: service_started
 
 volumes:
   pgdata: {}
