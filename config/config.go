@@ -2,8 +2,10 @@ package config
 
 import (
 	"log"
+	"os"
+	"strconv"
 
-	"github.com/spf13/viper"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -17,17 +19,25 @@ type Config struct {
 }
 
 func GetConfig() *Config {
-	config := Config{}
-	viper.SetConfigFile(".env")
+	_ = godotenv.Load(".env")
 
-	err := viper.ReadInConfig()
+	port, err := strconv.Atoi(os.Getenv("PORT"))
 	if err != nil {
-		log.Fatal("Can't read env file", err)
+		log.Fatal("Invalid PORT value")
+	}
+	dbPort, err := strconv.Atoi(os.Getenv("DB_PORT"))
+	if err != nil {
+		log.Fatal("Invalid DB_PORT value")
 	}
 
-	err = viper.Unmarshal(&config)
-	if err != nil {
-		log.Fatal("Can't unmarshal env file", err)
+	config := Config{
+		Port:       port,
+		DBHost:     os.Getenv("DB_HOST"),
+		DBPort:     dbPort,
+		DBUser:     os.Getenv("DB_USER"),
+		DBPassword: os.Getenv("DB_PASSWORD"),
+		DBName:     os.Getenv("DB_NAME"),
+		DBSSLMode:  os.Getenv("DB_SSL_MODE"),
 	}
 
 	return &config

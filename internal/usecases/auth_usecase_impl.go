@@ -2,10 +2,10 @@ package usecases
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/spf13/viper"
 	"github.com/worldkk1/robinhood-se-api/domain"
 	"github.com/worldkk1/robinhood-se-api/internal/repositories"
 	"golang.org/x/crypto/bcrypt"
@@ -71,7 +71,7 @@ func signToken(payload signTokenPayload, expiredAt time.Time) (string, error) {
 		"role": payload.Role,
 		"exp":  expiredAt.Unix(),
 	})
-	secretKey := viper.GetString("SECRET_KEY")
+	secretKey := os.Getenv("SECRET_KEY")
 	signToken, err := token.SignedString([]byte(secretKey))
 	if err != nil {
 		return "", err

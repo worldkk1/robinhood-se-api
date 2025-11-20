@@ -4,13 +4,13 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	redisrate "github.com/go-redis/redis_rate/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/redis/go-redis/v9"
-	"github.com/spf13/viper"
 )
 
 type Middleware func(http.Handler) http.HandlerFunc
@@ -62,7 +62,7 @@ func AuthMiddleware(next http.Handler) http.HandlerFunc {
 		}
 
 		tokenString := tokenSplit[1]
-		secretKey := viper.GetString("SECRET_KEY")
+		secretKey := os.Getenv("SECRET_KEY")
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 			return []byte(secretKey), nil
 		}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
@@ -116,7 +116,7 @@ func CheckRoleAdminMiddleware(next http.Handler) http.HandlerFunc {
 }
 
 func SetupRedisRateLimiter() *redisrate.Limiter {
-	connString := viper.GetString("REDIS_CONNECTION_STRING")
+	connString := os.Getenv("REDIS_CONNECTION_STRING")
 	client := redis.NewClient(&redis.Options{
 		Addr: connString,
 	})
