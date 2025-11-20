@@ -40,11 +40,23 @@ func (r *taskPostgresRepository) Create(input domain.Task) error {
 	})
 }
 
-func (r *taskPostgresRepository) Find(option FindOption) ([]domain.Task, error) {
+func (r *taskPostgresRepository) Find(option FindOption) (PaginationData[[]domain.Task], error) {
 	var taskModels []models.TaskModel
-	err := r.db.GetDb().Model(&models.TaskModel{}).Preload("User").Where(option.Where, option.WhereParams...).Order(option.Order).Find(&taskModels).Error
+
+	var totalRows int64
+	r.db.GetDb().Model(&models.TaskModel{}).Where(option.Where, option.WhereParams...).Count(&totalRows)
+
+	err := r.db.GetDb().
+		Model(&models.TaskModel{}).
+		Preload("User").
+		Where(option.Where, option.WhereParams...).
+		Order(option.Order).
+		Offset(option.Offset).
+		Limit(option.Limit).
+		Find(&taskModels).
+		Error
 	if err != nil {
-		return nil, err
+		return PaginationData[[]domain.Task]{Total: 0, Data: []domain.Task{}}, err
 	}
 
 	var result []domain.Task
@@ -62,7 +74,10 @@ func (r *taskPostgresRepository) Find(option FindOption) ([]domain.Task, error) 
 		})
 	}
 
-	return result, nil
+	return PaginationData[[]domain.Task]{
+		Total: totalRows,
+		Data:  result,
+	}, nil
 }
 
 func (r *taskPostgresRepository) FindOneByID(id string) (*domain.Task, error) {

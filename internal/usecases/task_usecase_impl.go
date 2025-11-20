@@ -26,15 +26,21 @@ func (u *taskUsecaseImpl) CreateTask(input domain.Task) error {
 	return nil
 }
 
-func (u *taskUsecaseImpl) GetTaskList() []TaskList {
-	tasks, err := u.taskRepository.Find(repositories.FindOption{
-		Where: "archived_at IS NULL",
-		Order: "created_at asc",
+func (u *taskUsecaseImpl) GetTaskList(pagination Pagination) PaginationData[[]TaskList] {
+	offset := pagination.Offset
+	limit := pagination.Limit
+
+	data, err := u.taskRepository.Find(repositories.FindOption{
+		Where:  "archived_at IS NULL",
+		Order:  "created_at asc",
+		Offset: offset,
+		Limit:  limit,
 	})
 	if err != nil {
-		return []TaskList{}
+		return PaginationData[[]TaskList]{Data: []TaskList{}, Total: 0}
 	}
 
+	tasks := data.Data
 	var taskList []TaskList
 	for _, task := range tasks {
 		taskList = append(taskList, TaskList{
@@ -54,7 +60,7 @@ func (u *taskUsecaseImpl) GetTaskList() []TaskList {
 		})
 	}
 
-	return taskList
+	return PaginationData[[]TaskList]{Data: taskList, Total: data.Total}
 }
 
 func (u *taskUsecaseImpl) GetTaskDetail(id string) *TaskDetail {

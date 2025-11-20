@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/worldkk1/robinhood-se-api/domain"
 	"github.com/worldkk1/robinhood-se-api/internal/dto"
@@ -48,11 +49,31 @@ func (h *taskHttpHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *taskHttpHandler) GetTaskList(w http.ResponseWriter, r *http.Request) {
-	tasks := h.taskUsecase.GetTaskList()
+	queryParams := r.URL.Query()
+	offset, _ := strconv.Atoi(queryParams.Get("offset"))
+	if offset <= 0 {
+		offset = 0
+	}
+	limit, _ := strconv.Atoi(queryParams.Get("limit"))
+	if limit <= 0 {
+		limit = 10
+	}
+
+	data := h.taskUsecase.GetTaskList(usecases.Pagination{
+		Offset: offset,
+		Limit:  limit,
+	})
+	tasks := data.Data
 	if tasks == nil {
 		tasks = []usecases.TaskList{}
 	}
-	result, err := json.Marshal(tasks)
+	response := dto.GetTaskListResponse{
+		Offset: offset,
+		Limit:  limit,
+		Total:  data.Total,
+		Data:   tasks,
+	}
+	result, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -37,9 +37,19 @@ type TaskList struct {
 	User        TaskUserDetail    `json:"user"`
 }
 
+type Pagination struct {
+	Offset int
+	Limit  int
+}
+
+type PaginationData[T any] struct {
+	Total int64
+	Data  T
+}
+
 type TaskUsecase interface {
 	CreateTask(input domain.Task) error
-	GetTaskList() []TaskList
+	GetTaskList(pagination Pagination) PaginationData[[]TaskList]
 	GetTaskDetail(id string) *TaskDetail
 	EditTask(id string, input domain.Task, updatedBy string) error
 	ArchiveTask(id string, updatedBy string) error
