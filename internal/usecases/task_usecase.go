@@ -34,6 +34,7 @@ type TaskList struct {
 	ArchivedAt  *time.Time        `json:"archivedAt"`
 	CreatedAt   time.Time         `json:"createdAt"`
 	UpdatedAt   time.Time         `json:"updatedAt"`
+	User        TaskUserDetail    `json:"user"`
 }
 
 type TaskUsecase interface {

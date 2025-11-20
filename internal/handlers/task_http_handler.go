@@ -49,6 +49,9 @@ func (h *taskHttpHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 
 func (h *taskHttpHandler) GetTaskList(w http.ResponseWriter, r *http.Request) {
 	tasks := h.taskUsecase.GetTaskList()
+	if tasks == nil {
+		tasks = []usecases.TaskList{}
+	}
 	result, err := json.Marshal(tasks)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

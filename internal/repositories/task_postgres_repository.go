@@ -40,9 +40,10 @@ func (r *taskPostgresRepository) Create(input domain.Task) error {
 	})
 }
 
-func (r *taskPostgresRepository) Find(where string, params ...any) ([]domain.Task, error) {
+func (r *taskPostgresRepository) Find(option FindOption) ([]domain.Task, error) {
 	var taskModels []models.TaskModel
-	if err := r.db.GetDb().Where(where, params...).Find(&taskModels).Error; err != nil {
+	err := r.db.GetDb().Model(&models.TaskModel{}).Preload("User").Where(option.Where, option.WhereParams...).Order(option.Order).Find(&taskModels).Error
+	if err != nil {
 		return nil, err
 	}
 
@@ -57,6 +58,7 @@ func (r *taskPostgresRepository) Find(where string, params ...any) ([]domain.Tas
 			ArchivedAt:  m.ArchivedAt,
 			CreatedAt:   m.CreatedAt,
 			UpdatedAt:   m.UpdatedAt,
+			User:        domain.User(m.User),
 		})
 	}
 

@@ -27,7 +27,10 @@ func (u *taskUsecaseImpl) CreateTask(input domain.Task) error {
 }
 
 func (u *taskUsecaseImpl) GetTaskList() []TaskList {
-	tasks, err := u.taskRepository.Find("archived_at IS NULL")
+	tasks, err := u.taskRepository.Find(repositories.FindOption{
+		Where: "archived_at IS NULL",
+		Order: "created_at asc",
+	})
 	if err != nil {
 		return []TaskList{}
 	}
@@ -43,6 +46,11 @@ func (u *taskUsecaseImpl) GetTaskList() []TaskList {
 			ArchivedAt:  task.ArchivedAt,
 			CreatedAt:   task.CreatedAt,
 			UpdatedAt:   task.UpdatedAt,
+			User: TaskUserDetail{
+				ID:    task.User.ID,
+				Name:  task.User.Name,
+				Email: task.User.Email,
+			},
 		})
 	}
 
