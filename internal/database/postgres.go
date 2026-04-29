@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/worldkk1/robinhood-se-api/config"
+	"github.com/worldkk1/work-ticket-based-api/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

@@ -3,7 +3,7 @@ package usecases
 import (
 	"time"
 
-	"github.com/worldkk1/robinhood-se-api/domain"
+	"github.com/worldkk1/work-ticket-based-api/domain"
 )
 
 type CommentUser struct {

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/worldkk1/robinhood-se-api/domain"
-	"github.com/worldkk1/robinhood-se-api/internal/dto"
-	"github.com/worldkk1/robinhood-se-api/internal/usecases"
+	"github.com/worldkk1/work-ticket-based-api/domain"
+	"github.com/worldkk1/work-ticket-based-api/internal/dto"
+	"github.com/worldkk1/work-ticket-based-api/internal/usecases"
 )
 
 type authHttpHandler struct {

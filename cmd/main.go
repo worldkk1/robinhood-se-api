@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/worldkk1/robinhood-se-api/cmd/server"
-	"github.com/worldkk1/robinhood-se-api/config"
-	"github.com/worldkk1/robinhood-se-api/internal/database"
+	"github.com/worldkk1/work-ticket-based-api/cmd/server"
+	"github.com/worldkk1/work-ticket-based-api/config"
+	"github.com/worldkk1/work-ticket-based-api/internal/database"
 )
 
 func main() {

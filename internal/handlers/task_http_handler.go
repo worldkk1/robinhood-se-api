@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/worldkk1/robinhood-se-api/domain"
-	"github.com/worldkk1/robinhood-se-api/internal/dto"
-	"github.com/worldkk1/robinhood-se-api/internal/handlers/middleware"
-	"github.com/worldkk1/robinhood-se-api/internal/usecases"
+	"github.com/worldkk1/work-ticket-based-api/domain"
+	"github.com/worldkk1/work-ticket-based-api/internal/dto"
+	"github.com/worldkk1/work-ticket-based-api/internal/handlers/middleware"
+	"github.com/worldkk1/work-ticket-based-api/internal/usecases"
 )
 
 type taskHttpHandler struct {

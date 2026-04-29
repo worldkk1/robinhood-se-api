@@ -1,6 +1,6 @@
 package repositories
 
-import "github.com/worldkk1/robinhood-se-api/domain"
+import "github.com/worldkk1/work-ticket-based-api/domain"
 
 type CommentRepository interface {
 	Create(input domain.Comment) error

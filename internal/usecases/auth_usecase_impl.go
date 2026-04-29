@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/worldkk1/robinhood-se-api/domain"
-	"github.com/worldkk1/robinhood-se-api/internal/repositories"
+	"github.com/worldkk1/work-ticket-based-api/domain"
+	"github.com/worldkk1/work-ticket-based-api/internal/repositories"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -1,7 +1,7 @@
 package usecases
 
 import (
-	"github.com/worldkk1/robinhood-se-api/domain"
+	"github.com/worldkk1/work-ticket-based-api/domain"
 )
 
 type AuthToken struct {

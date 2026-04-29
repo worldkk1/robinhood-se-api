@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/worldkk1/robinhood-se-api/internal/usecases"
+import "github.com/worldkk1/work-ticket-based-api/internal/usecases"
 
 type CreateTaskRequest struct {
 	Title       string `json:"title"`

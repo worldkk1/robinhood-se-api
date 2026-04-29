@@ -1,4 +1,4 @@
-module github.com/worldkk1/robinhood-se-api
+module github.com/worldkk1/work-ticket-based-api
 
 go 1.25.2
 

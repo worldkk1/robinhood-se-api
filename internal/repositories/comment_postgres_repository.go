@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"github.com/worldkk1/robinhood-se-api/domain"
-	"github.com/worldkk1/robinhood-se-api/internal/database"
-	"github.com/worldkk1/robinhood-se-api/internal/database/models"
+	"github.com/worldkk1/work-ticket-based-api/domain"
+	"github.com/worldkk1/work-ticket-based-api/internal/database"
+	"github.com/worldkk1/work-ticket-based-api/internal/database/models"
 )
 
 type commentPostgresRepository struct {

@@ -5,12 +5,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/worldkk1/robinhood-se-api/config"
-	"github.com/worldkk1/robinhood-se-api/internal/database"
-	handler "github.com/worldkk1/robinhood-se-api/internal/handlers"
-	middleware "github.com/worldkk1/robinhood-se-api/internal/handlers/middleware"
-	repository "github.com/worldkk1/robinhood-se-api/internal/repositories"
-	usecase "github.com/worldkk1/robinhood-se-api/internal/usecases"
+	"github.com/worldkk1/work-ticket-based-api/config"
+	"github.com/worldkk1/work-ticket-based-api/internal/database"
+	handler "github.com/worldkk1/work-ticket-based-api/internal/handlers"
+	middleware "github.com/worldkk1/work-ticket-based-api/internal/handlers/middleware"
+	repository "github.com/worldkk1/work-ticket-based-api/internal/repositories"
+	usecase "github.com/worldkk1/work-ticket-based-api/internal/usecases"
 )
 
 type httpServer struct {
